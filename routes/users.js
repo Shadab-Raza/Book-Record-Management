@@ -15,13 +15,14 @@ const router = express.Router();
  * Access: Public
  * Parameters: none
 */
-
 router.get('/', (req,res) => {
     res.status(200).json({
         success: true,
         data: users,
     });
 });
+
+
 
 
 /**
@@ -32,7 +33,6 @@ router.get('/', (req,res) => {
  * Access: Public
  * Parameters: id
 */
-
 router.get("/:id", (req,res) =>{
     const {id} = req.params;
     const user = users.find((each) => each.id === id);
@@ -49,6 +49,8 @@ router.get("/:id", (req,res) =>{
 });
 
 
+
+
 /**
  *  Route No- 3
  * Route: /users
@@ -57,7 +59,6 @@ router.get("/:id", (req,res) =>{
  * Access: Public
  * Parameters: none
 */
-
 router.post("/", (req,res) => {
     const {id, name, surname, email, subscriptionType, subscriptionDate} = req.body;
     const user = users.find((each) => each.id === id);
@@ -84,6 +85,8 @@ router.post("/", (req,res) => {
 });
 
 
+
+
 /**
  *  Route No- 4
  * Route: /users/:id
@@ -92,7 +95,6 @@ router.post("/", (req,res) => {
  * Access: Public
  * Parameters: id
 */
-
 router.put('/:id', (req, res) => {
     const {id} = req.params;
     const {data} = req.body;
@@ -122,6 +124,8 @@ router.put('/:id', (req, res) => {
 });
 
 
+
+
 /**
  *  Route No- 5
  * Route: /users/:id
@@ -130,7 +134,6 @@ router.put('/:id', (req, res) => {
  * Access: Public
  * Parameters: id
 */
-
 router.delete('/:id', (req, res) => {
     const {id} = req.params;
     const user = users.find((each) => each.id === id);
@@ -152,7 +155,79 @@ router.delete('/:id', (req, res) => {
 });
 
 
-// Routes or APIS for project ends here
+
+
+/**
+ *  Route No- 6
+ * Route: /users/subscription-details/:id
+ * Method: GET
+ * Description: Get all user subscription details
+ * Access: Public
+ * Parameters: id
+*/
+router.get('/subscription-details/:id', (req, res) => {
+    const {id} = req.params;
+
+    const user = users.find((each) => each.id === id);
+
+    if(!user) return res.status(404).json({
+        success: false,
+        message: "User not found",
+    });
+
+    const getDateInDays = (data = "") => {
+        let date;
+        if(data === ""){
+            // current date
+            date = new Date();
+        }else {
+            // gettting date on basis of data variable
+            date = new Date(data);
+        }
+
+        let days = Math.floor(date / (1000 * 60 * 60 * 24));
+        return days;
+    };
+
+    const subscriptionType = (date) => {
+        if(user.subscriptionType === "Basic"){
+            date = date + 90;
+        } else if(user.subscriptionType === "Standard"){
+            date = date + 180;
+        } else if(user.subscriptionType === "Premium"){
+            date = date + 365;
+        }
+        return date;
+    };
+
+    // Subscription expiration calculation
+    // January 1, 1970, UTC.  miliseconds
+
+    let returnDate = getDateInDays(user.returnDate);
+    let currentDate = getDateInDays();
+    let subscriptionDate = getDateInDays(user.subscriptionDate);
+    let subscriptionExpiration = subscriptionType(subscriptionDate);
+
+
+    const data = {
+        ...user,
+        subscriptionExpired: subscriptionExpiration < currentDate,
+
+        daysLeftForExpiration: 
+            subscriptionExpiration <= currentDate ? 0 : subscriptionExpiration - currentDate,
+
+        fine:
+             returnDate < currentDate ?
+                subscriptionExpiration <= currentDate ? 200 : 100 : 0,  
+    };
+
+
+    res.status(200).json({
+        success: true,
+        data,
+    })
+});
+
 
 
 
