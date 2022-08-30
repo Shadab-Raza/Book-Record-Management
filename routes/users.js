@@ -8,6 +8,7 @@ const router = express.Router();
 // Routes or APIS for project started from here
 
 /**
+ *  Route No- 1
  * Route: /users
  * Method: GET
  * Description: Get all user
@@ -24,6 +25,7 @@ router.get('/', (req,res) => {
 
 
 /**
+ *  Route No- 2
  * Route: /users/:id
  * Method: GET
  * Description: Get single user by id
@@ -48,6 +50,7 @@ router.get("/:id", (req,res) =>{
 
 
 /**
+ *  Route No- 3
  * Route: /users
  * Method: POST
  * Description: Create new user
@@ -82,6 +85,7 @@ router.post("/", (req,res) => {
 
 
 /**
+ *  Route No- 4
  * Route: /users/:id
  * Method: PUT
  * Description: Updating user data
@@ -119,6 +123,7 @@ router.put('/:id', (req, res) => {
 
 
 /**
+ *  Route No- 5
  * Route: /users/:id
  * Method: DELETE
  * Description: Delete a user by id

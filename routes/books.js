@@ -6,6 +6,7 @@ const router = express.Router();
 
 
 /**
+ * Route No- 1
  * Route: /books
  * Method: GET
  * Description: Get all books
@@ -24,6 +25,7 @@ module.exports = router;
 
 
 /**
+ *  Route No- 2
  * Route: /books/:id
  * Method: GET
  * Description: Get book by id
@@ -51,6 +53,7 @@ router.get("/:id", (req, res) => {
 
 
 /**
+ *  Route No- 3
  * Route: /books/issued/by-user
  * Method: GET
  * Description: Get all issued books
