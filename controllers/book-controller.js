@@ -1,5 +1,7 @@
+const issuedBook = require("../dtos/book-dtos")
 const {BookModel, UserModel} = require("../models");
-const userModel = require("../models/user-model");
+const bookModel = require("../models/book-model");
+//const userModel = require("../models/user-model");
 
 
 exports.getAllBooks = async (req, res) => {
@@ -18,6 +20,28 @@ exports.getAllBooks = async (req, res) => {
 };
 
 
+exports.getSingleBookByName = async (req, res) => {
+    const {name} = req.params;
+
+    const book = await BookModel.findOne({
+        name: name,
+    });
+
+    if(!book) 
+        return res.status(404).json({
+            success: false,
+            message: "Book not found",
+        });
+
+    return res.status(200).json({
+        success: true,
+        data: book,
+    });
+};
+
+
+
+// Additional route
 exports.getSingleBookById = async (req, res) => {
     const {id} = req.params;
 
@@ -38,7 +62,7 @@ exports.getSingleBookById = async (req, res) => {
 
 exports.getAllIssuedBooks = async (req,res) => {
     const users = await UserModel.find({
-        issuedBook : { $exixts: true},
+        issuedBook : { $exists: true},
     }).populate("issuedBook");
 
     const issuedBooks = users.map((each) => new issuedBook(each))
@@ -53,5 +77,47 @@ exports.getAllIssuedBooks = async (req,res) => {
     return res.status(200).json({
         success: true,
         data: issuedBooks,
+    });
+};
+
+
+exports.addNewBook = async (req, res) => {
+    const {data} = req.body;
+
+    if(!data) {
+        return res.status(400).json({
+            success: false,
+            message: "No data provided"
+        });
+    }
+
+    await bookModel.create(data);
+
+    const allBooks = await BookModel.find();
+
+    return res.status(200).json({
+        success: true,
+        data: allBooks,
+    });
+};
+
+
+exports.updateBookByID = async (req,res) => {
+    const {id} = req.params;
+    const {data} = req.body;
+
+    const updatedBook = await BookModel.findOneAndUpdate(
+        {
+            _id: id,
+        }, 
+            data, 
+        {
+            new: true,
+        }
+    );
+
+    return res.status(200).json({
+        success: true,
+        data: updatedBook,
     });
 };
